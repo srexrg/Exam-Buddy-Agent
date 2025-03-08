@@ -33,7 +33,7 @@ agent = Agent(
 )
 
 youtube_summarizer_agent = Agent(
-    model=Gemini(id="gemini-2.0-flash",api_key=""),
+    model=Gemini(id="gemini-2.0-flash",api_key=os.getenv("GOOGLE_API_KEY")),
     tools=[YouTubeTools()],
     show_tool_calls=True,
     markdown=True,
@@ -70,6 +70,9 @@ question_generator_agent = Agent(
     ]
 )
 
+def has_study_materials():
+    """Check if any study materials have been uploaded"""
+    return os.path.exists("uploaded_docs") and any(os.listdir("uploaded_docs"))
 
 def summarize_youtube_video(video_url):
    
@@ -159,40 +162,43 @@ if st.session_state.active_tab == "chat":
         ):
             st.markdown(message["content"])
     
-  
-    if prompt := st.chat_input("Ask me anything about your study materials..."):
+    if not has_study_materials():
+        st.warning("Please upload study materials first before chatting.")
+        st.info("You can upload PDF documents using the upload section in the sidebar.")
+    else:
+        if prompt := st.chat_input("Ask me anything about your study materials..."):
 
-        with st.chat_message("user", avatar="🧑‍💻"):
-            st.markdown(prompt)
-    
+            with st.chat_message("user", avatar="🧑‍💻"):
+                st.markdown(prompt)
         
-        st.session_state.messages.append({"role": "user", "content": prompt})
-    
- 
-        with st.chat_message("assistant", avatar="📚"):
-            response_container = st.empty()
-            full_response = ""
             
-            with st.spinner("Thinking..."):
-              
-                response_obj = agent.run(prompt, stream=True)
-                if hasattr(response_obj, 'content'):
-              
-                    full_response = response_obj.content
-                else:
-              
-                    for chunk in response_obj:
-                        if hasattr(chunk, 'content'):
-                            full_response += chunk.content
-                            response_container.markdown(full_response)
-                
-              
-                response_container.markdown(full_response)
-    
+            st.session_state.messages.append({"role": "user", "content": prompt})
         
-            st.session_state.messages.append(
-                {"role": "assistant", "content": full_response}
-            )
+     
+            with st.chat_message("assistant", avatar="📚"):
+                response_container = st.empty()
+                full_response = ""
+                
+                with st.spinner("Thinking..."):
+                  
+                    response_obj = agent.run(prompt, stream=True)
+                    if hasattr(response_obj, 'content'):
+                  
+                        full_response = response_obj.content
+                    else:
+                  
+                        for chunk in response_obj:
+                            if hasattr(chunk, 'content'):
+                                full_response += chunk.content
+                                response_container.markdown(full_response)
+                    
+                  
+                    response_container.markdown(full_response)
+        
+            
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": full_response}
+                )
 
 elif st.session_state.active_tab == "youtube":
  
@@ -273,7 +279,7 @@ elif st.session_state.active_tab == "mcq":
     
  
     if generate_button:
-        if os.path.exists("uploaded_docs") and any(os.listdir("uploaded_docs")):
+        if has_study_materials():
             with st.spinner("Generating multiple choice questions..."):
                 try:
             
@@ -331,7 +337,7 @@ elif st.session_state.active_tab == "long":
     
 
     if generate_button:
-        if os.path.exists("uploaded_docs") and any(os.listdir("uploaded_docs")):
+        if has_study_materials():
             with st.spinner("Generating long-form questions..."):
                 try:
         
