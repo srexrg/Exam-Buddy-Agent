@@ -29,8 +29,8 @@ An AI-powered study companion that helps students prepare for exams through inte
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/srexrg/exam-buddy.git
-   cd exam-buddy
+   git clone https://github.com/srexrg/exam-buddy-agent.git
+   cd exam-buddy-agent
    ```
 
 2. Create a virtual environment:
