@@ -11,7 +11,7 @@ An AI-powered study companion that helps students prepare for exams through inte
 
 ## 🛠️ Tech Stack
 
-- **Agentic Framework**: [Agno](https://https://www.agno.com/)
+- **Agentic Framework**: [Agno](https://www.agno.com/)
 - **Frontend & App Framework**: [Streamlit](https://streamlit.io/)
 - **AI Models**:
   - [OpenAI GPT-4o](https://openai.com) for chat functionality and question generation
