@@ -1,0 +1,6 @@
+.env/
+/.env
+tmp/
+venv/
+*.pyc
+uploaded_docs/
