@@ -1,0 +1,8 @@
+streamlit
+agno
+openai
+google-generativeai
+python-dotenv
+lancedb
+pypdf
+youtube-transcript-api
