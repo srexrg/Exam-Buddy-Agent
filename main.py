@@ -55,13 +55,13 @@ question_generator_agent = Agent(
     add_references=True,
     show_tool_calls=True,
     markdown=True,
-    description="You are an AI agent specialized in creating exam questions based on study materials.",
+    description="You are an AI agent specialized in creating exam questions based on study materials in the knowledge base.",
     instructions=[
-        "Create high-quality academic questions based ONLY on the content retrieved from the knowledge base.",
+        "Create high-quality academic questions based ONLY on the content from the knowledge base.",
         "Do NOT generate questions about topics or information not explicitly found in the retrieved documents.",
         "Each question MUST be tied directly to specific content from the knowledge base.",
         "For MCQs, include 4 options with exactly one correct answer that can be verified from the source material.",
-        "For long-form questions, create questions that test understanding of specific content from the materials.",
+        "For long-form questions, create questions that test understanding of specific content from the source materials.",
         "Include precise citations or page references for the information used in each question.",
         "If insufficient information is available on a requested topic, state this clearly rather than fabricating content.",
         "Include the specific source document and section for each question you generate.",
@@ -89,10 +89,36 @@ def generate_mcq_questions(num_questions, difficulty, topics="all the topics in 
 
 
 def generate_long_questions(num_questions, marks_per_question, topics="all the topics in the knowledge base"):
-    prompt = f"Generate {num_questions} long-form questions worth {marks_per_question} marks each"
-    if topics:
-        prompt += f" focusing on these topics: {topics}"
-    prompt += ". For each question, include: 1) The question text that requires detailed explanation or analysis, 2) A comprehensive model answer that would score full marks, 3) Key points that should be included in a good answer."
+    prompt = f"""Generate {num_questions} comprehensive long-form questions worth {marks_per_question} marks each.
+
+IMPORTANT INSTRUCTIONS:
+1. First, thoroughly search the knowledge base for detailed content on {topics if topics and topics.strip() else "the most important concepts in the study materials"}.
+2. Generate questions ONLY about content you can find in the knowledge base. DO NOT invent or fabricate information.
+3. Each question must be based on SPECIFIC sections, quotes, or passages from your knowledge base.
+4. For each section of knowledge you use, include the exact document name and page/section reference.
+
+For each question, please structure your response as follows:
+
+### Question {marks_per_question} marks
+[Clear, specific question that requires in-depth knowledge of the material]
+
+### Source Material
+[Specific document name(s) and exact page numbers/sections this question is based on]
+
+### Key Concepts Tested
+- [List 3-5 key concepts or terms from the knowledge base that this question tests]
+
+### Model Answer
+[A comprehensive model answer that would score full marks, containing ONLY information found in the knowledge base]
+
+### Marking Scheme
+- [Break down how marks would be awarded for different components of the answer]
+- [Include specific terms, theories, or examples that must be mentioned]
+
+---
+
+If you cannot find enough relevant content in the knowledge base on the requested topics, clearly state which topics lack sufficient information rather than creating questions about them.
+"""
     
     return question_generator_agent.run(prompt, stream=True)
 
@@ -234,6 +260,7 @@ elif st.session_state.active_tab == "youtube":
                 if hasattr(streaming_response, 'content'):
                 
                     full_summary = streaming_response.content
+                    print(full_summary)
                     summary_container.markdown(full_summary)
                 else:
                  
