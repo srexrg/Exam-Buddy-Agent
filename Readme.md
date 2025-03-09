@@ -2,6 +2,13 @@
 
 An AI-powered study companion that helps students prepare for exams through intelligent document search, video summarization, and automated question generation.
 
+
+
+
+https://github.com/user-attachments/assets/44714450-b60c-4a07-8083-54baa257318f
+
+
+
 ## 🌟 Features
 
 - **📖 Document Search**: Upload and query your study materials (PDFs) using natural language
